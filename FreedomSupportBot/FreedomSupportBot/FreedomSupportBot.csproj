@@ -4,6 +4,22 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>2aaa42bd-90e1-489e-b3a5-27878fbf2d45</UserSecretsId>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="System.Net.Http.Json" Version="10.0.0" />
+      <PackageReference Include="Telegram.Bot" Version="22.7.6-dev.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\Models\" />
+    </ItemGroup>
 
 </Project>
