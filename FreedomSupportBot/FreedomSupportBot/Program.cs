@@ -1,4 +1,6 @@
 using FreedomSupportBot.Data;
+using FreedomSupportBot.Services;
+using FreedomSupportBot.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,12 @@ builder.Services.AddDbContext<FreedomSupportDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
+
+var openAiKey = config["OpenAi:ApiKey"];
+var openAiModel = config["OpenAi:Model"];
+var openAiPersona = config["OpenAi:Persona"];
+
+builder.Services.AddSingleton<IAiSupportService>(new OpenAiSupportService(openAiKey!, openAiModel!, openAiPersona!));
 
 var app = builder.Build();
 
