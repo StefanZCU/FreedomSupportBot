@@ -75,7 +75,7 @@ public class ConversationService : IConversationService
         };
 
         await _dbContext.SupportMessages.AddAsync(message);
-        _logger.LogInformation("Saved customer message for customer {CustomerId}: {Text}", customerId, text);
+        _logger.LogInformation("Saved bot message for customer {CustomerId}: {Text}", customerId, text);
     }
 
     public async Task<string> HandleMessageAsync(long telegramUserId, string? username, string text)
