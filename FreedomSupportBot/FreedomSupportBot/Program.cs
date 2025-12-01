@@ -22,6 +22,7 @@ var openAiModel = config["OpenAi:Model"];
 var openAiPersona = config["OpenAi:Persona"];
 
 builder.Services.AddSingleton<IAiSupportService>(new OpenAiSupportService(openAiKey!, openAiModel!, openAiPersona!));
+builder.Services.AddScoped<IConversationService, ConversationService>();
 
 var app = builder.Build();
 
