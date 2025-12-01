@@ -1,6 +1,19 @@
+using FreedomSupportBot.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration;
+
+var connectionString = config.GetConnectionString("DefaultConnection") ??
+                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<FreedomSupportDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
 
 var app = builder.Build();
 
