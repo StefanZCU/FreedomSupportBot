@@ -59,17 +59,23 @@ public class TelegramBotService : BackgroundService
         CancellationToken cancellationToken)
     {
         
-        // Ignore everything except text messages
         if (update.Type != UpdateType.Message || update.Message!.Type != MessageType.Text)
         {
             return;
         }
 
         var message = update.Message;
-        var text = message.Text;
-        var userId = message.Chat.Id;
+        var text = message.Text ?? string.Empty;
+        var chatId = message.Chat.Id;
 
-        _logger.LogInformation("Received message from {UserId}: {Text}", userId, text);
+        _logger.LogInformation("Received message from {ChatId}: {Text}", chatId, text);
+
+        var replyText = $"I received your message: \"{text}\"";
+
+        await _botClient.SendMessage(
+            chatId: chatId,
+            text: replyText,
+            cancellationToken: cancellationToken);
     }
     
     private Task HandleErrorAsync(
