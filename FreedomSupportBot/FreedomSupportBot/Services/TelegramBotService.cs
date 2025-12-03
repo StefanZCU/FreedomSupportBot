@@ -1,3 +1,4 @@
+using FreedomSupportBot.Services.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -69,8 +70,14 @@ public class TelegramBotService : BackgroundService
         var chatId = message.Chat.Id;
 
         _logger.LogInformation("Received message from {ChatId}: {Text}", chatId, text);
+        
+        using var scope = _scopeFactory.CreateScope();
+        var conversationService = scope.ServiceProvider.GetRequiredService<IConversationService>();
 
-        var replyText = $"I received your message: \"{text}\"";
+        var replyText = await conversationService.HandleMessageAsync(
+            chatId, 
+            message.Chat.Username, 
+            text);
 
         await _botClient.SendMessage(
             chatId: chatId,
