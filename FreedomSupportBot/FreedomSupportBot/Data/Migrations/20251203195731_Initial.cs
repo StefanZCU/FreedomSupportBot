@@ -28,12 +28,34 @@ namespace FreedomSupportBot.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SupportMessages",
+                name: "Conversations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Conversations_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ConversationId = table.Column<int>(type: "int", nullable: false),
                     FromCustomer = table.Column<bool>(type: "bit", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -42,17 +64,22 @@ namespace FreedomSupportBot.Data.Migrations
                 {
                     table.PrimaryKey("PK_SupportMessages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SupportMessages_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
+                        name: "FK_SupportMessages_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SupportMessages_CustomerId",
-                table: "SupportMessages",
+                name: "IX_Conversations_CustomerId",
+                table: "Conversations",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportMessages_ConversationId",
+                table: "SupportMessages",
+                column: "ConversationId");
         }
 
         /// <inheritdoc />
@@ -60,6 +87,9 @@ namespace FreedomSupportBot.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "SupportMessages");
+
+            migrationBuilder.DropTable(
+                name: "Conversations");
 
             migrationBuilder.DropTable(
                 name: "Customers");

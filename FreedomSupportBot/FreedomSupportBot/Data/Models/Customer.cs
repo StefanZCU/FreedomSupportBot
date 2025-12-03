@@ -15,5 +15,5 @@ public class Customer
 
     public DateTime LastSeen { get; set; }
 
-    public ICollection<SupportMessage> SupportMessages { get; set; } = new List<SupportMessage>();
+    public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
 }

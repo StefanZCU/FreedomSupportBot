@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreedomSupportBot.Data.Migrations
 {
     [DbContext(typeof(FreedomSupportDbContext))]
-    [Migration("20251201021524_Initial")]
+    [Migration("20251203195731_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,6 +24,33 @@ namespace FreedomSupportBot.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("FreedomSupportBot.Data.Models.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Conversations");
+                });
 
             modelBuilder.Entity("FreedomSupportBot.Data.Models.Customer", b =>
                 {
@@ -58,11 +85,11 @@ namespace FreedomSupportBot.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("FromCustomer")
                         .HasColumnType("bit");
@@ -73,15 +100,15 @@ namespace FreedomSupportBot.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("ConversationId");
 
                     b.ToTable("SupportMessages");
                 });
 
-            modelBuilder.Entity("FreedomSupportBot.Data.Models.SupportMessage", b =>
+            modelBuilder.Entity("FreedomSupportBot.Data.Models.Conversation", b =>
                 {
                     b.HasOne("FreedomSupportBot.Data.Models.Customer", "Customer")
-                        .WithMany("SupportMessages")
+                        .WithMany("Conversations")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -89,9 +116,25 @@ namespace FreedomSupportBot.Data.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("FreedomSupportBot.Data.Models.SupportMessage", b =>
+                {
+                    b.HasOne("FreedomSupportBot.Data.Models.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("FreedomSupportBot.Data.Models.Conversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("FreedomSupportBot.Data.Models.Customer", b =>
                 {
-                    b.Navigation("SupportMessages");
+                    b.Navigation("Conversations");
                 });
 #pragma warning restore 612, 618
         }

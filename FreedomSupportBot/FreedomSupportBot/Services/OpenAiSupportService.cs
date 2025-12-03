@@ -17,7 +17,7 @@ public class OpenAiSupportService : IAiSupportService
         _openAiPersona = openAiPersona;
     }
 
-    public async Task<string> GetReplyAsync(int customerId, string customerMessage)
+    public async Task<string> GetReplyAsync(string customerMessage)
     {
         var body = new
         {

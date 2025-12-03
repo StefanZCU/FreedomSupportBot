@@ -8,10 +8,10 @@ public class SupportMessage
     [Key]
     public int Id { get; set; }
     
-    public int CustomerId { get; set; }
+    public int ConversationId { get; set; }
 
-    [ForeignKey(nameof(CustomerId))]
-    public Customer Customer { get; set; } = null!;
+    [ForeignKey(nameof(ConversationId))]
+    public Conversation Conversation { get; set; } = null!;
 
     public bool FromCustomer { get; set; }
 

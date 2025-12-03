@@ -19,7 +19,7 @@ public class TestController : Controller
             message = "I have an issue with my order, how can you help me?";
         }
         
-        var reply = await _aiSupportService.GetReplyAsync(1, message);  
+        var reply = await _aiSupportService.GetReplyAsync(message);  
         
         return Content(reply);
     }

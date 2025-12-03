@@ -2,5 +2,5 @@ namespace FreedomSupportBot.Services.Interfaces;
 
 public interface IAiSupportService
 {
-    Task<string> GetReplyAsync(int customerId, string customerMessage);
+    Task<string> GetReplyAsync(string customerMessage);
 }
