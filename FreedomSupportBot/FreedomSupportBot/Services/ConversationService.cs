@@ -1,3 +1,4 @@
+using System.Text;
 using FreedomSupportBot.Data;
 using FreedomSupportBot.Data.Models;
 using FreedomSupportBot.Services.Interfaces;
@@ -97,6 +98,40 @@ public class ConversationService : IConversationService
         await _dbContext.SupportMessages.AddAsync(message);
         _logger.LogInformation("Saved bot message for conversation {ConversationId}: {Text}", conversationId, text);
     }
+    
+    public async Task<string> GetLast30MessagesAsync(int conversationId, int maxCount)
+    {
+        var messages = await _dbContext.SupportMessages
+            .Where(m => m.ConversationId == conversationId)
+            .OrderByDescending(m => m.CreatedAt)
+            .Take(maxCount)
+            .ToListAsync();
+
+
+        var sb = new StringBuilder();
+
+        foreach (var supportMessage in messages)
+        {
+            var prefix = supportMessage.FromCustomer ? "Customer" : "Support Bot";
+            sb.AppendLine($"{prefix}: {supportMessage.Text}");
+        }
+        
+        return sb.ToString().TrimEnd();
+    }
+
+    public string GenerateNewPrompt(string conversationText, string customerMessage)
+    {
+        var sb =  new StringBuilder();
+        sb.AppendLine("You are a helpful assistant. Here is the conversation so far:");
+        sb.AppendLine(conversationText);
+        
+        sb.AppendLine("Now, the customer wants to ask you a question:");
+        sb.AppendLine(customerMessage);
+        
+        sb.AppendLine("Respond as the support agent, staying consistent with the conversation. Please answer the question based on the conversation so far.");
+        
+        return sb.ToString().TrimEnd();
+    }
 
     public async Task<string> HandleMessageAsync(long telegramUserId, string? username, string text)
     {
@@ -104,8 +139,10 @@ public class ConversationService : IConversationService
         var conversation = await GetOrCreateActiveConversationAsync(customer.Id);
 
         await SaveCustomerMessageAsync(conversation.Id, text);
+        
+        var newPrompt = GenerateNewPrompt(await GetLast30MessagesAsync(conversation.Id, 30), text);
 
-        var replyText = await _aiSupportService.GetReplyAsync(text);
+        var replyText = await _aiSupportService.GetReplyAsync(newPrompt);
 
         await SaveBotMessageAsync(conversation.Id, replyText);
 
