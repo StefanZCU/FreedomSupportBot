@@ -99,11 +99,11 @@ public class ConversationService : IConversationService
         _logger.LogInformation("Saved bot message for conversation {ConversationId}: {Text}", conversationId, text);
     }
     
-    public async Task<string> GetLast30MessagesAsync(int conversationId, int maxCount)
+    public async Task<string> GetRecentMessagesAsync(int conversationId, int maxCount)
     {
         var messages = await _dbContext.SupportMessages
             .Where(m => m.ConversationId == conversationId)
-            .OrderByDescending(m => m.CreatedAt)
+            .OrderBy(m => m.CreatedAt)
             .Take(maxCount)
             .ToListAsync();
 
@@ -122,7 +122,7 @@ public class ConversationService : IConversationService
     public string GenerateNewPrompt(string conversationText, string customerMessage)
     {
         var sb =  new StringBuilder();
-        sb.AppendLine("You are a helpful assistant. Here is the conversation so far:");
+        sb.AppendLine("Here is the conversation so far:");
         sb.AppendLine(conversationText);
         
         sb.AppendLine("Now, the customer wants to ask you a question:");
@@ -140,7 +140,7 @@ public class ConversationService : IConversationService
 
         await SaveCustomerMessageAsync(conversation.Id, text);
         
-        var newPrompt = GenerateNewPrompt(await GetLast30MessagesAsync(conversation.Id, 30), text);
+        var newPrompt = GenerateNewPrompt(await GetRecentMessagesAsync(conversation.Id, 30), text);
 
         var replyText = await _aiSupportService.GetReplyAsync(newPrompt);
 
